@@ -7,6 +7,7 @@ import javax.persistence.EntityTransaction;
 
 import model.Glumac;
 import model.Izvodjenje;
+import model.Karta;
 import model.Posetilac;
 import model.Predstava;
 import model.Uloga;
@@ -148,5 +149,49 @@ public class Controller {
 				 .setParameter("idP", idPredstave)
 				 .getResultList();
 	}
+	
+	//METODE ZA ZADATAK PRIPREMA ZA KOLOKVIJUM ŠTO JE LIDIJA OKAÈILA
+	
+	public static List<Uloga> getUloge(String ime, String prez){
+		
+		String upit = "select u from Uloga u "
+					+ "where u.glumac.ime like :ime and u.glumac.prezime like :prez";
+		
+		return em.createQuery(upit, Uloga.class)
+				 .setParameter("ime", ime)
+				 .setParameter("prez", prez)
+				 .getResultList();
+	}
+	
+	public static Posetilac getPosetilac(Integer idPosetilac) {
+		
+		return em.find(Posetilac.class, idPosetilac);
+	}
+	
+	public static List<Karta> getRezervisaneKarte(Integer idPosetilac){
+		
+		String upit = "select k from Karta k "
+					+ "where k.posetilac.idPosetilac like :idP and k.datumRezervacije is not null";
+		
+		return em.createQuery(upit, Karta.class)
+				 .setParameter("idP", idPosetilac)
+				 .getResultList();
+	}
+	
+	public static boolean isPlacena(Integer idKarta) {
+		
+		String upit = "select k from Karta k "
+					+ "where k.idKarta like :idKarta and k.datumPlacanja is not null";
+		
+		Karta k = (Karta) em.createQuery(upit, Karta.class)
+						    .setParameter("idKarta", idKarta)
+						    .getResultList()
+						    .stream()
+						    .findFirst()
+						    .orElseGet(null);
+		
+		return k != null ? true : false;
+	}
+	
 
 }

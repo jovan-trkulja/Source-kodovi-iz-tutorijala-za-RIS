@@ -10,6 +10,7 @@ import model.Izvodjenje;
 import model.Karta;
 import model.Posetilac;
 import model.Predstava;
+import model.Scena;
 import model.Uloga;
 import model.Zanr;
 import util.JPAUtil;
@@ -150,7 +151,7 @@ public class Controller {
 				 .getResultList();
 	}
 	
-	//METODE ZA ZADATAK PRIPREMA ZA KOLOKVIJUM ŠTO JE LIDIJA OKAÈILA
+	//METODE ZA ZADATAK PRIPREMA ZA KOLOKVIJUM ŠTO JE LIDIJA OKACILA
 	
 	public static List<Uloga> getUloge(String ime, String prez){
 		
@@ -191,6 +192,40 @@ public class Controller {
 						    .orElseGet(null);
 		
 		return k != null ? true : false;
+	}
+	
+//	METODE ZA ZARKOV ZADATAK
+	
+	public static List<Scena> getSveScene() {
+			
+		return em.createQuery("select s from Scena s", Scena.class).getResultList();
+	}
+	
+	public static List<Izvodjenje> getIzvodjenjaNaSceni(Integer idScena){
+		
+		String upit = "select i from Izvodjenje i where i.scena.idScena = :idScena";
+		
+		return em.createQuery(upit, Izvodjenje.class)
+				 .setParameter("idScena", idScena)
+				 .getResultList();
+	}
+	
+	public static List<Glumac> getGlumciZaPredstavu(Integer idPredstava){
+		
+		String upit = "select g from Glumac g inner join g.ulogas u "
+					+ "where u.predstava.idPredstava like :idP";
+		
+		return em.createQuery(upit, Glumac.class)
+				 .setParameter("idP", idPredstava)
+				 .getResultList();
+	
+	}
+	
+	public static List<Uloga> getUloge(Integer idPredstava){
+		
+		String upit = "select u from Uloga u where u.predstava.idPredstava = :idPredstava";
+		
+		return em.createQuery(upit, Uloga.class).setParameter("idPredstava", idPredstava).getResultList();
 	}
 	
 
